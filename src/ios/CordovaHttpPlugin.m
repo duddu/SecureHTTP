@@ -79,7 +79,7 @@
    [self setRequestHeaders: headers];
    
    CordovaHttpPlugin* __weak weakSelf = self;
-   manager.responseSerializer = [TextResponseSerializer serializer];
+   manager.responseSerializer = [TextResponseSerializer serializer: headers];
    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
       NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
       [dictionary setObject:[NSNumber numberWithInt:operation.response.statusCode] forKey:@"status"];
@@ -109,7 +109,7 @@
    
    CordovaHttpPlugin* __weak weakSelf = self;
    
-   manager.responseSerializer = [TextResponseSerializer serializer];
+   manager.responseSerializer = [TextResponseSerializer serializer: headers];
    [manager GET:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
       NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
       [dictionary setObject:[NSNumber numberWithInt:operation.response.statusCode] forKey:@"status"];
@@ -139,7 +139,7 @@
    
    CordovaHttpPlugin* __weak weakSelf = self;
    
-   manager.responseSerializer = [TextResponseSerializer serializer];
+   manager.responseSerializer = [TextResponseSerializer serializer: headers];
    [manager PUT:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
       NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
       [dictionary setObject:[NSNumber numberWithInt:operation.response.statusCode] forKey:@"status"];
@@ -169,7 +169,7 @@
    
    CordovaHttpPlugin* __weak weakSelf = self;
    
-   manager.responseSerializer = [TextResponseSerializer serializer];
+   manager.responseSerializer = [TextResponseSerializer serializer: headers];
    [manager DELETE:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
       NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
       [dictionary setObject:[NSNumber numberWithInt:operation.response.statusCode] forKey:@"status"];
@@ -205,7 +205,7 @@
     [self setRequestHeaders: headers];
     
     CordovaHttpPlugin* __weak weakSelf = self;
-    manager.responseSerializer = [TextResponseSerializer serializer];
+    manager.responseSerializer = [TextResponseSerializer serializer: headers];
     [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         NSError *error;
         [formData appendPartWithFileURL:fileURL name:name error:&error];
