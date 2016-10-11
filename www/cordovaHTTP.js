@@ -123,6 +123,12 @@ if (typeof angular !== "undefined") {
             get: function(url, params, headers) {
                 return makePromise(http.get, [url, params, headers], true);
             },
+            put: function(url, params, headers) {
+                return makePromise(http.put, [url, params, headers], true);
+            },
+            delete: function(url, params, headers) {
+                return makePromise(http.delete, [url, params, headers], true);
+            },
             uploadFile: function(url, params, headers, filePath, name) {
                 return makePromise(http.uploadFile, [url, params, headers, filePath, name], true);
             },
