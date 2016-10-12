@@ -58,7 +58,7 @@ var http = {
          *
         */
         var win = function(result) {
-            var entry = new (require('org.apache.cordova.file.FileEntry'))();
+            var entry = new (require('cordova-plugin-file.FileEntry'))();
             entry.isDirectory = false;
             entry.isFile = true;
             entry.name = result.file.name;
