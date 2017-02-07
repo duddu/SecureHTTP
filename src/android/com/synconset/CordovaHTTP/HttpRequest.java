@@ -258,11 +258,13 @@ public class HttpRequest {
   private static final String CRLF = "\r\n";
 
   private static final String[] EMPTY_STRINGS = new String[0];
-  
+
+  private static SSLSocketFactory DEFAULT_FACTORY;
+
   private static SSLSocketFactory PINNED_FACTORY;
 
   private static SSLSocketFactory TRUSTED_FACTORY;
-  
+
   private static ArrayList<Certificate> PINNED_CERTS;
 
   private static HostnameVerifier TRUSTED_VERIFIER;
@@ -273,7 +275,24 @@ public class HttpRequest {
     else
       return CHARSET_UTF8;
   }
-  
+
+  private static SSLSocketFactory getDefaultFactory()
+      throws HttpRequestException {
+    if (DEFAULT_FACTORY == null) {
+      try {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, null, null);
+        DEFAULT_FACTORY = new TLSSocketFactory(sslContext);
+      } catch (GeneralSecurityException e) {
+        IOException ioException = new IOException(
+                "Security exception configuring SSL context");
+        ioException.initCause(e);
+        throw new HttpRequestException(ioException);
+      }
+    }
+    return DEFAULT_FACTORY;
+  }
+
   private static SSLSocketFactory getPinnedFactory()
       throws HttpRequestException {
     if (PINNED_FACTORY != null) {
@@ -381,11 +400,24 @@ public class HttpRequest {
      * {@link URL#openConnection()}
      */
     ConnectionFactory DEFAULT = new ConnectionFactory() {
+
+      private boolean isHttpsUrl(final URL url) {
+        return ("https".equalsIgnoreCase(url.getProtocol()));
+      }
+
+      private void setDefaultTLS() {
+        if (android.os.Build.VERSION.SDK_INT < 20)
+          if (!HttpsURLConnection.getDefaultSSLSocketFactory().equals(DEFAULT_FACTORY))
+            HttpsURLConnection.setDefaultSSLSocketFactory(getDefaultFactory());
+      }
+
       public HttpURLConnection create(URL url) throws IOException {
+        if (isHttpsUrl(url)) setDefaultTLS();
         return (HttpURLConnection) url.openConnection();
       }
 
       public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
+        if (isHttpsUrl(url)) setDefaultTLS();
         return (HttpURLConnection) url.openConnection(proxy);
       }
     };
@@ -3217,7 +3249,7 @@ public class HttpRequest {
         form(entry, charset);
     return this;
   }
-  
+
   /**
    * Configure HTTPS connection to trust only certain certificates
    * <p>
